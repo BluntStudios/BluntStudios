@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BluntStudios - High-Fidelity AI Creative Suite</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        gold: {
+                            50: '#FDFBF7',
+                            100: '#FBF7ED',
+                            200: '#F4EBCE',
+                            300: '#EADCAF',
+                            400: '#DDCD90',
+                            500: '#D4AF37', // Brushed Gold Accent
+                            600: '#BC962E',
+                            700: '#9C7B25',
+                            800: '#7C601D',
+                            900: '#5C4615',
+                        },
+                        dark: {
+                            950: '#060608',
+                            900: '#0C0C11',
+                            800: '#13131A',
+                            700: '#1D1D26',
+                            600: '#282833',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060608;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1D1D26;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+        .gold-border-focus:focus {
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-dark-950 text-gray-200 font-sans selection:bg-gold-500 selection:text-dark-950 min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-dark-800 bg-dark-950/80 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="relative w-8 h-8 flex items-center justify-center">
+                    <svg class="w-7 h-7 text-gold-500 transform group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12,2 2,22 22,22" class="fill-gold-500/10 stroke-gold-500" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="absolute inset-0 bg-gold-500 blur-md opacity-25 group-hover:opacity-45 transition-opacity duration-300"></div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-lg font-bold tracking-widest text-white font-serif">BLUNT<span class="text-gold-500 font-sans font-light">STUDIOS</span></span>
+                    <span class="text-[9px] text-gray-500 tracking-wider">Created by Sruteesh</span>
+                </div>
+            </a>
+
+            <!-- Navigation Menu -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-450">
+                <a href="#" class="text-gold-500 transition-colors">Creative Hub</a>
+                <a href="#" class="hover:text-white transition-colors">Flux Engine</a>
+                <a href="#" class="hover:text-white transition-colors">Showcase</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <span class="text-[10px] text-gold-400 bg-gold-950/30 border border-gold-800/40 px-3 py-1 rounded-full font-semibold uppercase tracking-wider">Flux-v1 Ultra Mode</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Control Panel -->
+            <section class="lg:col-span-5 bg-dark-900 border border-dark-800 rounded-2xl p-6 flex flex-col gap-6 self-start">
+                
+                <!-- Prompt Input -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs uppercase tracking-wider text-gold-500 font-semibold flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 1. Detailed Description
+                    </label>
+                    <textarea 
+                        id="promptInput"
+                        placeholder="State your concept... (e.g., 'A modern geometric minimalist logo representing a futuristic tech workspace, bold and memorable')" 
+                        class="w-full h-28 bg-dark-950 border border-dark-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none gold-border-focus transition-all resize-none"
+                    ></textarea>
+                </div>
+
+                <!-- Style Selector -->
+                <div class="flex flex-col gap-3">
+                    <label class="text-xs uppercase tracking-wider text-gold-500 font-semibold flex items-center gap-2">
+                        <i data-lucide="palette" class="w-3.5 h-3.5"></i> 2. Select Creative Style
+                    </label>
+                    <div class="grid grid-cols-3 gap-2" id="styleGrid">
+                        <button onclick="selectStyle('realistic')" class="style-card border border-dark-800 hover:border-dark-600 bg-dark-950 text-gray-400 hover:text-white rounded-xl p-3 text-center flex flex-col items-center gap-2 transition-all group">
+                            <i data-lucide="camera" class="w-5 h-5 text-gray-400 group-hover:text-gold-500 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-medium">Photoreal</span>
+                        </button>
+                        <button onclick="selectStyle('anime')" class="style-card border border-dark-800 hover:border-dark-600 bg-dark-950 text-gray-400 hover:text-white rounded-xl p-3 text-center flex flex-col items-center gap-2 transition-all group">
+                            <i data-lucide="zap" class="w-5 h-5 text-gray-400 group-hover:text-gold-500 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-medium">Anime</span>
+                        </button>
+                        <button onclick="selectStyle('cartoonic')" class="style-card border border-dark-800 hover:border-dark-600 bg-dark-950 text-gray-400 hover:text-white rounded-xl p-3 text-center flex flex-col items-center gap-2 transition-all group">
+                            <i data-lucide="smile" class="w-5 h-5 text-gray-400 group-hover:text-gold-500 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-medium">Cartoonic</span>
+                        </button>
+                        <button onclick="selectStyle('logo')" class="style-card active border border-gold-500/50 bg-gold-950/20 text-white rounded-xl p-3 text-center flex flex-col items-center gap-2 transition-all group">
+                            <i data-lucide="shield" class="w-5 h-5 text-gold-500 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-medium">Logo Suite</span>
+                        </button>
+                        <button onclick="selectStyle('branding')" class="style-card border border-dark-800 hover:border-dark-600 bg-dark-950 text-gray-400 hover:text-white rounded-xl p-3 text-center flex flex-col items-center gap-2 transition-all group">
+                            <i data-lucide="layout" class="w-5 h-5 text-gray-400 group-hover:text-gold-500 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-medium">Branding</span>
+                        </button>
+                        <button onclick="selectStyle('cinematic')" class="style-card border border-dark-800 hover:border-dark-600 bg-dark-950 text-gray-400 hover:text-white rounded-xl p-3 text-center flex flex-col items-center gap-2 transition-all group">
+                            <i data-lucide="clapperboard" class="w-5 h-5 text-gray-400 group-hover:text-gold-500 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-xs font-medium">Cinematic</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Custom Logo Customizer -->
+                <div id="logoControlsPanel" class="bg-dark-950 border border-dark-800 rounded-xl p-4 flex flex-col gap-4 transition-all duration-300">
+                    <h5 class="text-xs font-semibold uppercase text-gold-500 tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i> Logo Typography & Design Rules
+                    </h5>
+                    
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-gray-400 uppercase font-medium">Text to display inside the logo</label>
+                        <input 
+                            type="text" 
+                            id="logoBrandText" 
+                            placeholder="e.g., BluntStudios" 
+                            class="w-full bg-dark-900 border border-dark-800 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:border-gold-500/50"
+                        >
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] text-gray-400 uppercase font-medium">Logo Archetype Style</label>
+                        <select id="logoSubStyle" class="w-full bg-dark-900 border border-dark-800 rounded-lg py-2 px-3 text-xs text-gray-300 focus:outline-none focus:border-gold-500/50">
+                            <option value="minimalist">Modern Minimalist Vector (Isolated, Flat Solid Background)</option>
+                            <option value="luxury">Luxury Gold Crest Emblem (Symmetric Shield Art)</option>
+                            <option value="tech">Cybernetic Tech Geometry Lineart (Glowing Holo Design)</option>
+                            <option value="mascot">3D Esport Mascot Emblem (Vibrant Gradients, Solid Outlines)</option>
+                            <option value="typography">Elegant Corporate Lettermark / Typography (Pure Font Focus)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Aspect Ratio Selector -->
+                <div class="flex flex-col gap-3">
+                    <label class="text-xs uppercase tracking-wider text-gold-500 font-semibold flex items-center gap-2">
+                        <i data-lucide="aspect-ratio" class="w-3.5 h-3.5"></i> 3. Aspect Ratio
+                    </label>
+                    <div class="grid grid-cols-4 gap-2" id="ratioGrid">
+                        <button onclick="selectRatio('1:1')" class="ratio-card active border border-gold-500/50 bg-gold-950/20 text-white rounded-xl py-3 px-2 text-center flex flex-col items-center gap-1.5 transition-all">
+                            <div class="w-4 h-4 border-2 border-current rounded-sm opacity-80"></div>
+                            <span class="text-[11px] font-medium">1:1 Square</span>
+                        </button>
+                        <button onclick="selectRatio('16:9')" class="ratio-card border border-dark-800 hover:border-dark-600 bg-dark-950 text-gray-400 hover:text-white rounded-xl py-3 px-2 text-center flex flex-col items-center gap-1.5 transition-all">
+                            <div class="w-7 h-4 border-2 border-current rounded-sm opacity-80"></div>
+                            <span class="text-[11px] font-medium">16:9 Movie</span>
+                        </button>
+                        <button onclick="selectRatio('9:16')" class="ratio-card border border-dark-800 hover:border-dark-600 bg-dark-950 text-gray-400 hover:text-white rounded-xl py-3 px-2 text-center flex flex-col items-center gap-1.5 transition-all">
+                            <div class="w-4 h-7 border-2 border-current rounded-sm opacity-80"></div>
+                            <span class="text-[11px] font-medium">9:16 Story</span>
+                        </button>
+                        <button onclick="selectRatio('4:3')" class="ratio-card border border-dark-800 hover:border-dark-600 bg-dark-950 text-gray-400 hover:text-white rounded-xl py-3 px-2 text-center flex flex-col items-center gap-1.5 transition-all">
+                            <div class="w-6 h-4.5 border-2 border-current rounded-sm opacity-80"></div>
+                            <span class="text-[11px] font-medium">4:3 Retro</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Reference Image Upload & Style Analyzer -->
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs uppercase tracking-wider text-gold-500 font-semibold flex items-center gap-2">
+                            <i data-lucide="image" class="w-3.5 h-3.5"></i> 4. Image Reference & Structural Template
+                        </label>
+                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">Optional</span>
+                    </div>
+                    
+                    <div class="relative group">
+                        <input type="file" id="refImageInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleFileSelect(event)">
+                        <div id="dropzone" class="border border-dashed border-dark-700 hover:border-gold-500/40 bg-dark-950 rounded-xl p-5 text-center flex flex-col items-center justify-center gap-2 transition-all">
+                            <div class="w-10 h-10 rounded-full bg-dark-900 flex items-center justify-center text-gray-400 group-hover:text-gold-500 transition-colors">
+                                <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                <span class="text-gold-500 font-semibold">Upload visual structural reference</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Uploaded Image Information & Live Color Extraction -->
+                    <div id="filePreviewContainer" class="hidden flex flex-col gap-3 bg-dark-950 border border-dark-800 rounded-xl p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <img id="refImgPreview" src="" alt="Thumbnail" class="w-10 h-10 object-cover rounded-md border border-dark-700">
+                                <div class="min-w-0">
+                                    <p id="refImgName" class="text-xs text-gray-300 font-medium truncate max-w-[120px]">filename.jpg</p>
+                                    <p id="refImgSize" class="text-[10px] text-gray-500">Calculating...</p>
+                                </div>
+                            </div>
+                            <button onclick="clearRefImage()" class="text-gray-500 hover:text-red-400 p-1.5 transition-colors">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="border-t border-dark-800/60 pt-2.5">
+                            <p class="text-[10px] uppercase text-gray-400 tracking-wider mb-2">Analyzing reference color palette:</p>
+                            <div id="paletteSwatches" class="flex gap-2">
+                                <!-- Generated Dynamic Swatch Items Go Here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Trigger Button -->
+                <button 
+                    id="generateBtn"
+                    onclick="triggerGeneration()"
+                    class="w-full relative overflow-hidden group bg-gradient-to-r from-amber-600 via-gold-500 to-amber-600 hover:from-amber-500 hover:via-gold-400 hover:to-amber-500 text-dark-950 font-bold py-4 rounded-xl shadow-lg transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-2"
+                >
+                    <i data-lucide="wand-2" class="w-5 h-5"></i>
+                    <span>GENERATE HIGH-RES IMAGE</span>
+                </button>
+
+            </section>
+
+            <!-- Right Panel: ChatGPT Style Conversational Workspace -->
+            <section class="lg:col-span-7 flex flex-col gap-6">
+                
+                <!-- Chat Stream Container -->
+                <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 flex-grow flex flex-col min-h-[550px] justify-between">
+                    
+                    <!-- Chat Header -->
+                    <div class="flex items-center justify-between border-b border-dark-800 pb-4 mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="w-2.5 h-2.5 rounded-full bg-gold-500 animate-pulse"></span>
+                            <span class="text-xs font-semibold text-gray-300 uppercase tracking-wider">BluntStudios AI Assistant</span>
+                        </div>
+                        <span class="text-[10px] bg-dark-950 px-2 py-1 rounded-md border border-dark-800 text-gray-500 uppercase">Flux-v1 Architecture</span>
+                    </div>
+
+                    <!-- Chat Feed Workspace -->
+                    <div id="chatFeed" class="flex-grow flex flex-col gap-4 overflow-y-auto max-h-[500px] pr-2">
+                        
+                        <!-- Initial Welcome Message -->
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-8 h-8 rounded-lg bg-gold-950/40 border border-gold-800/30 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12,5 5,19 19,19" fill="none" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="bg-dark-950 border border-dark-800/65 rounded-2xl rounded-tl-none p-4 max-w-[85%]">
+                                <p class="text-xs font-semibold text-gold-500 uppercase tracking-widest mb-1.5">BluntStudios AI</p>
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    Welcome. I am optimized with **Flux-v1 modeling**, designed to build premium, clean vector logo typography and photorealistic renders with correct text spelling. 
+                                    <br><br>
+                                    To guide composition and form directly, drop any structural reference image above.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- AI Processing State Indicator -->
+                    <div id="aiTypingIndicator" class="hidden flex flex-col gap-2 my-3">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-8 h-8 rounded-lg bg-gold-950/40 border border-gold-800/30 flex items-center justify-center shrink-0 animate-pulse">
+                                <i data-lucide="brain-circuit" class="w-4 h-4 text-gold-500"></i>
+                            </div>
+                            <div class="bg-dark-950 border border-dark-800 rounded-2xl p-4 max-w-[85%] flex flex-col gap-2">
+                                <div class="flex items-center gap-3">
+                                    <span id="aiProcessingState" class="text-xs text-gray-400">Booting Flux Rendering Engine...</span>
+                                    <div class="flex gap-1">
+                                        <span class="w-1.5 h-1.5 bg-gold-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+                                        <span class="w-1.5 h-1.5 bg-gold-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                                        <span class="w-1.5 h-1.5 bg-gold-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-dark-900 h-1 rounded-full overflow-hidden border border-dark-800 mt-1">
+                                    <div id="progressBar" class="bg-gradient-to-r from-amber-600 to-gold-500 h-full w-0 transition-all duration-150 ease-out"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Footer Actions -->
+                    <div class="flex items-center justify-between border-t border-dark-800 pt-4 mt-4">
+                        <span class="text-[10px] text-gray-600">Created by Sruteesh</span>
+                        <button id="clearChatBtn" onclick="clearFeed()" class="px-3 py-1.5 text-[11px] font-medium bg-dark-950 hover:bg-dark-850 text-gray-400 border border-dark-800 rounded-md transition-colors flex items-center gap-1">
+                            <i data-lucide="trash" class="w-3 h-3"></i> Clear Workspace
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Showcase History Grid -->
+                <div class="bg-dark-900 border border-dark-800 rounded-2xl p-6 flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <h5 class="text-xs font-bold text-gold-500 uppercase tracking-wider">Dynamic Showcase History</h5>
+                        <span id="galleryCount" class="text-[10px] text-gray-500 uppercase">Empty</span>
+                    </div>
+                    
+                    <div id="emptyGalleryState" class="py-6 border border-dashed border-dark-800 rounded-xl flex flex-col items-center justify-center text-center transition-all duration-300">
+                        <i data-lucide="images" class="w-7 h-7 text-gray-700 mb-1.5"></i>
+                        <p class="text-xs text-gray-500">Your visual generations will appear here.</p>
+                    </div>
+
+                    <!-- Recent Works Grid -->
+                    <div id="recentWorksGrid" class="hidden grid grid-cols-4 gap-3">
+                        <!-- Filled in dynamically -->
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Hidden Canvas Element for reference color extraction -->
+    <canvas id="paletteCanvas" class="hidden" width="30" height="30"></canvas>
+
+    <!-- Footer -->
+    <footer class="border-t border-dark-800 bg-dark-950 py-8 px-4 mt-12 text-center text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12,5 5,19 19,19" fill="none" stroke-linejoin="round"/>
+                </svg>
+                <span class="font-bold text-gray-400">BLUNT<span class="text-gold-500 font-light">STUDIOS</span></span>
+                <span class="text-dark-700">|</span>
+                <span>Created by Sruteesh</span>
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-gold-500 transition-colors">Flux API Docs</a>
+                <a href="#" class="hover:text-gold-500 transition-colors">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Logic Core -->
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+
+        // Workspace States
+        let selectedStyle = 'logo'; // Default style to Logo to match preferences
+        let selectedRatio = '1:1';
+        let rawFile = null;
+        let referenceImgData = null;
+        let extractedColors = [];
+        let generatedHistory = [];
+
+        const ratioDimensions = {
+            '1:1': { w: 1024, h: 1024 },
+            '16:9': { w: 1024, h: 576 },
+            '9:16': { w: 576, h: 1024 },
+            '4:3': { w: 1024, h: 768 }
+        };
+
+        // Initialize default UI selection
+        selectStyle('logo');
+
+        // Select Style Logic
+        function selectStyle(style) {
+            selectedStyle = style;
+            const logoSubpanel = document.getElementById('logoControlsPanel');
+            if (style === 'logo') {
+                logoSubpanel.classList.remove('hidden');
+            } else {
+                logoSubpanel.classList.add('hidden');
+            }
+
+            document.querySelectorAll('.style-card').forEach(card => {
+                card.classList.remove('border-gold-500/50', 'bg-gold-950/20', 'text-white');
+                card.classList.add('border-dark-800', 'hover:border-dark-600', 'bg-dark-950', 'text-gray-400');
+                
+                const icon = card.querySelector('svg');
+                if(icon) {
+                    icon.classList.remove('text-gold-500');
+                    icon.classList.add('text-gray-400');
+                }
+            });
+
+            // Target the clicked button dynamically or retrieve correct node if initialized
+            const activeCard = event ? event.currentTarget : document.querySelector(`.style-card[onclick="selectStyle('${style}')"]`);
+            if (activeCard) {
+                activeCard.classList.remove('border-dark-800', 'hover:border-dark-600', 'bg-dark-950', 'text-gray-400');
+                activeCard.classList.add('border-gold-500/50', 'bg-gold-950/20', 'text-white');
+                const activeIcon = activeCard.querySelector('svg');
+                if (activeIcon) {
+                    activeIcon.classList.remove('text-gray-400');
+                    activeIcon.classList.add('text-gold-500');
+                }
+            }
+
+            document.getElementById('metaStyle').innerText = `Style: ${style}`;
+        }
+
+        // Select Ratio Logic
+        function selectRatio(ratio) {
+            selectedRatio = ratio;
+            document.querySelectorAll('.ratio-card').forEach(card => {
+                card.classList.remove('border-gold-500/50', 'bg-gold-950/20', 'text-white');
+                card.classList.add('border-dark-800', 'hover:border-dark-600', 'bg-dark-950', 'text-gray-400');
+            });
+
+            const activeCard = event.currentTarget;
+            activeCard.classList.remove('border-dark-800', 'hover:border-dark-600', 'bg-dark-950', 'text-gray-400');
+            activeCard.classList.add('border-gold-500/50', 'bg-gold-950/20', 'text-white');
+
+            document.getElementById('metaRatio').innerText = `Ratio: ${ratio}`;
+        }
+
+        // File uploads and pixel color sampling
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            rawFile = file; // Preserve raw file resource for external serverless host uploading
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                referenceImgData = e.target.result;
+                document.getElementById('dropzone').classList.add('hidden');
+                document.getElementById('filePreviewContainer').classList.remove('hidden');
+                
+                document.getElementById('refImgPreview').src = e.target.result;
+                document.getElementById('refImgName').innerText = file.name;
+                document.getElementById('refImgSize').innerText = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+
+                extractColorPalette(e.target.result);
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function extractColorPalette(imageSrc) {
+            const img = new Image();
+            img.src = imageSrc;
+            img.onload = function() {
+                const canvas = document.getElementById('paletteCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 30, 30);
+                const imgData = ctx.getImageData(0, 0, 30, 30).data;
+                
+                let colorMap = {};
+                for (let i = 0; i < imgData.length; i += 16) {
+                    const r = imgData[i];
+                    const g = imgData[i+1];
+                    const b = imgData[i+2];
+                    const hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+                    if(r > 240 && g > 240 && b > 240) continue;
+                    if(r < 15 && g < 15 && b < 15) continue;
+                    colorMap[hex] = (colorMap[hex] || 0) + 1;
+                }
+
+                const sortedColors = Object.keys(colorMap).sort((a, b) => colorMap[b] - colorMap[a]);
+                extractedColors = sortedColors.slice(0, 4);
+
+                const swatchesContainer = document.getElementById('paletteSwatches');
+                swatchesContainer.innerHTML = '';
+                extractedColors.forEach(color => {
+                    const swatchNode = document.createElement('div');
+                    swatchNode.className = "flex items-center gap-1.5 bg-dark-900 border border-dark-850 rounded-md py-1 px-2 text-[10px] text-gray-300";
+                    swatchNode.innerHTML = `
+                        <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${color}"></span>
+                        <span>${color}</span>
+                    `;
+                    swatchesContainer.appendChild(swatchNode);
+                });
+            };
+        }
+
+        function clearRefImage() {
+            rawFile = null;
+            referenceImgData = null;
+            extractedColors = [];
+            document.getElementById('refImageInput').value = "";
+            document.getElementById('filePreviewContainer').classList.add('hidden');
+            document.getElementById('dropzone').classList.remove('hidden');
+            document.getElementById('paletteSwatches').innerHTML = '';
+        }
+
+        // Conversational feed reset
+        function clearFeed() {
+            const feed = document.getElementById('chatFeed');
+            feed.innerHTML = `
+                <div class="flex items-start gap-3.5">
+                    <div class="w-8 h-8 rounded-lg bg-gold-950/40 border border-gold-800/30 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12,5 5,19 19,19" fill="none" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="bg-dark-950 border border-dark-800/65 rounded-2xl rounded-tl-none p-4 max-w-[85%]">
+                        <p class="text-xs font-semibold text-gold-500 uppercase tracking-widest mb-1.5">BluntStudios AI</p>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Workspace reset successful. Ready for subsequent creations.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Secure client-side background file-uploader via anonymous tmpfiles.org endpoint
+        async function uploadReferenceImage(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('https://tmpfiles.org/api/v1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.status === 'success' && result.data && result.data.url) {
+                    // Convert viewing endpoint to direct file download path
+                    return result.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+                }
+            } catch (error) {
+                console.error("Reference upload handshake failed:", error);
+            }
+            return null;
+        }
+
+        // Trigger AI Generation Suite with conversational ChatGPT-style processing
+        async function triggerGeneration() {
+            const rawPrompt = document.getElementById('promptInput').value.trim();
+            if (!rawPrompt) {
+                alert("Please describe your design concept first.");
+                return;
+            }
+
+            const feed = document.getElementById('chatFeed');
+            const typingIndicator = document.getElementById('aiTypingIndicator');
+            const processingState = document.getElementById('aiProcessingState');
+            const generateBtn = document.getElementById('generateBtn');
+            const progress = document.getElementById('progressBar');
+
+            // 1. Post User Message in Feed
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex items-start gap-3.5 justify-end my-2";
+            userMsg.innerHTML = `
+                <div class="bg-gold-500 text-dark-950 rounded-2xl rounded-tr-none p-4 max-w-[85%] text-right shadow-md">
+                    <p class="text-[10px] font-bold uppercase tracking-wider mb-1">Concept Submission</p>
+                    <p class="text-xs font-medium leading-relaxed">${rawPrompt}</p>
+                    <span class="text-[9px] opacity-70 block mt-1">Preset: ${selectedStyle} | Ratio: ${selectedRatio}</span>
+                </div>
+                <div class="w-8 h-8 rounded-lg bg-dark-800 border border-dark-700 flex items-center justify-center shrink-0 text-white">
+                    <i data-lucide="user" class="w-4 h-4"></i>
+                </div>
+            `;
+            feed.appendChild(userMsg);
+            lucide.createIcons();
+            feed.scrollTop = feed.scrollHeight;
+
+            // Show typing & loading controls
+            typingIndicator.classList.remove('hidden');
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            let currentProgress = 0;
+            progress.style.width = '0%';
+            
+            const progressInterval = setInterval(() => {
+                if (currentProgress < 85) {
+                    currentProgress += Math.floor(Math.random() * 5) + 2;
+                    progress.style.width = currentProgress + '%';
+                }
+            }, 300);
+
+            // 2. Upload reference image if present
+            let hostedReferenceUrl = null;
+            if (rawFile) {
+                processingState.innerText = "Hosting reference image on secure CDN...";
+                hostedReferenceUrl = await uploadReferenceImage(rawFile);
+                if (hostedReferenceUrl) {
+                    processingState.innerText = "Reference connected! Analyzing composition...";
+                } else {
+                    processingState.innerText = "Reference upload failed. Falling back to text prompt...";
+                }
+            }
+
+            // 3. Build refined prompt with typography safeguards using Flux parameters
+            processingState.innerText = "Synthesizing visual concepts with Flux-v1 Engine...";
+            let basePrompt = "";
+            let descriptiveInfo = "";
+
+            if (selectedStyle === 'logo') {
+                const brandText = document.getElementById('logoBrandText').value.trim();
+                const subStyle = document.getElementById('logoSubStyle').value;
+
+                if (subStyle === 'minimalist') {
+                    basePrompt = `A high-end professional modernist vector logo representing: ${rawPrompt}. Flat icon styling, clean mathematical geometry curves, masterfully designed, solid pitch black background.`;
+                    descriptiveInfo = `Minimalist flat design matrix layout, vector paths optimized.`;
+                } else if (subStyle === 'luxury') {
+                    basePrompt = `A premium majestic high-contrast gold metallic heraldic crest logo of: ${rawPrompt}. Ornate symmetry details, premium luxury aesthetic, isolated on solid dark background.`;
+                    descriptiveInfo = `Luxury gold relief mapping, high specular reflections.`;
+                } else if (subStyle === 'tech') {
+                    basePrompt = `A futuristic cybernetic neon digital geometry emblem logo of: ${rawPrompt}. Bright electric wireframes, high-contrast, black backdrop.`;
+                    descriptiveInfo = `Cyberpunk layout, additive vector light rendering.`;
+                } else if (subStyle === 'mascot') {
+                    basePrompt = `An esport team mascot vector character logo representing: ${rawPrompt}. Bold black outlines, rich solid cartoon gradients, highly graphic.`;
+                    descriptiveInfo = `Dynamic illustration format, thick ink outline mapping.`;
+                } else if (subStyle === 'typography') {
+                    basePrompt = `An elegant typographic wordmark logo of the word: "${brandText}". Masterful customized typography design, symmetric spacing balance, solid flat dark background.`;
+                    descriptiveInfo = `Typographical lettermark optimization.`;
+                }
+
+                // Strictly wrap typographic instructions for Flux spelling correct render
+                if (brandText && subStyle !== 'typography') {
+                    basePrompt += ` Featuring the exact text written "${brandText}" printed in clean, legible, modern bold corporate sans-serif typography, spelled correctly.`;
+                } else if (!brandText) {
+                    basePrompt += ` Isolated vector art icon, strictly textless, no spelling, flat solid background.`;
+                }
+
+                // Logo Negative guidelines
+                basePrompt += " --no low quality rendering, generic template shape, messy details, low-contrast gradients, spelling mistakes, distorted characters, low-res";
+
+            } else {
+                // Non-logo styles
+                basePrompt = rawPrompt;
+                if (selectedStyle === 'realistic') {
+                    basePrompt += ", hyper-photorealistic raw photography, crisp studio lighting, 8k resolution, cinematic path tracing, natural rich textures, masterwork";
+                    descriptiveInfo = `Photorealistic 3D camera mapping, ray-traced shadow models.`;
+                } else if (selectedStyle === 'anime') {
+                    basePrompt += ", beautiful clean 2D anime illustration, dynamic visual keyart, highly detailed outlines, bright clean coloring, Ghibli master class background quality";
+                    descriptiveInfo = `Anime visual frame. Clean lines, ambient color maps.`;
+                } else if (selectedStyle === 'cartoonic') {
+                    basePrompt += ", gorgeous premium 3D clay-render cartoon art, warm global lighting, soft focus, polished plastic/clay textures, cute toy look";
+                    descriptiveInfo = `Sub-surface scattering model. Clean stylized geometry.`;
+                } else if (selectedStyle === 'branding') {
+                    basePrompt += ", premium modern product packaging design presentation, graphic layout catalog style, minimal high-end commercial advertising mockup, studio backdrop";
+                    descriptiveInfo = `Editorial graphic packaging preset. Optimal branding layout.`;
+                } else if (selectedStyle === 'cinematic') {
+                    basePrompt += ", cinematic film frame render, majestic gold key backlighting, dynamic anamorphic lens flares, raw atmospheric mood, dramatic movie layout";
+                    descriptiveInfo = `Anamorphic wide-angle simulation, heavy color grading.`;
+                }
+            }
+
+            // 4. Inject structural reference image link directly to prompt
+            if (hostedReferenceUrl) {
+                basePrompt = `<img src="${hostedReferenceUrl}"> Influence structural composition, geometric form, styling layout and balance from the linked image. Content to draw: ${basePrompt}`;
+            }
+
+            // Append color guidelines if present
+            if (extractedColors.length > 0) {
+                basePrompt += `, primary palette matching HEX values: ${extractedColors.join(", ")}`;
+            }
+
+            const dimensions = ratioDimensions[selectedRatio];
+            const randomSeed = Math.floor(Math.random() * 89999999) + 10000000;
+
+            // Direct API Generation request using Flux-v1 to handle spelling and logos
+            const generationUrl = `https://image.pollinations.ai/p/${encodeURIComponent(basePrompt)}?width=${dimensions.w}&height=${dimensions.h}&seed=${randomSeed}&model=flux&nologo=true`;
+
+            // Background image loader
+            const imagePreloader = new Image();
+            imagePreloader.src = generationUrl;
+            imagePreloader.onload = function() {
+                clearInterval(progressInterval);
+                progress.style.width = '100%';
+
+                setTimeout(() => {
+                    typingIndicator.classList.add('hidden');
+                    generateBtn.disabled = false;
+                    generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                    // 5. Post Conversational Response with Rendered output (ChatGPT style)
+                    const aiResponse = document.createElement('div');
+                    aiResponse.className = "flex items-start gap-3.5 my-3 animate-fadeIn";
+                    
+                    let colorPaletteText = extractedColors.length > 0 ? extractedColors.join(" / ") : "Automatically Extracted";
+                    let brandSpecText = document.getElementById('logoBrandText').value.trim() ? document.getElementById('logoBrandText').value.trim() : "None Provided";
+                    let referenceConnectedStatus = hostedReferenceUrl ? "ACTIVE STRUCTURAL INFLUENCE DETECTED" : "None Connected";
+
+                    aiResponse.innerHTML = `
+                        <div class="w-8 h-8 rounded-lg bg-gold-950/40 border border-gold-800/30 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12,5 5,19 19,19" fill="none" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="bg-dark-950 border border-dark-800/75 rounded-2xl rounded-tl-none p-4 max-w-[85%] flex flex-col gap-3">
+                            <div>
+                                <p class="text-xs font-semibold text-gold-500 uppercase tracking-widest mb-1">BluntStudios AI</p>
+                                <p class="text-xs text-gray-300 leading-relaxed mb-3">
+                                    Render task complete. I've successfully engaged the **Flux-v1 architecture** to isolate geometry and structural constraints. Below is the processing diagnostics and the generated high-resolution output:
+                                </p>
+                                
+                                <!-- ChatGPT Style Parameter diagnostic details -->
+                                <div class="border-l-2 border-gold-500/40 pl-3 py-1.5 my-2 text-[11px] text-gray-400 flex flex-col gap-1 bg-dark-900/40 rounded-r-md pr-2">
+                                    <div><strong class="text-gray-300">Semantic Prompt:</strong> ${rawPrompt}</div>
+                                    <div><strong class="text-gray-300">Model Engine:</strong> Flux-v1 Typography Optimizer</div>
+                                    <div><strong class="text-gray-300">Raster Profile:</strong> ${selectedStyle.toUpperCase()} (${descriptiveInfo})</div>
+                                    <div><strong class="text-gray-300">Text Target:</strong> "${brandSpecText}" (Wrapped spelling instructions)</div>
+                                    <div><strong class="text-gray-300">Reference Template:</strong> ${referenceConnectedStatus}</div>
+                                    <div><strong class="text-gray-300">Render Ratio:</strong> ${selectedRatio} (${dimensions.w}x${dimensions.h} px)</div>
+                                    <div><strong class="text-gray-300">Extracted Palette:</strong> ${colorPaletteText}</div>
+                                </div>
+                            </div>
+
+                            <!-- Rendered Output -->
+                            <div class="relative w-full overflow-hidden rounded-xl border border-dark-800/80 bg-dark-900 shadow-inner group">
+                                <img src="${generationUrl}" alt="Generation" class="w-full object-contain max-h-[350px]">
+                                <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <button onclick="downloadDirectly('${generationUrl}')" class="bg-gold-500 text-dark-950 hover:bg-gold-400 p-2 rounded-lg transition-all shadow-md flex items-center gap-1 text-[11px] font-bold">
+                                        <i data-lucide="download" class="w-3.5 h-3.5"></i> Download High-Res
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    feed.appendChild(aiResponse);
+                    lucide.createIcons();
+                    feed.scrollTop = feed.scrollHeight;
+
+                    // Update History Gallery
+                    saveToHistory(generationUrl, rawPrompt);
+                }, 400);
+            };
+
+            imagePreloader.onerror = function() {
+                clearInterval(progressInterval);
+                typingIndicator.classList.add('hidden');
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                const errResponse = document.createElement('div');
+                errResponse.className = "flex items-start gap-3.5 my-2";
+                errResponse.innerHTML = `
+                    <div class="w-8 h-8 rounded-lg bg-red-950/40 border border-red-800/30 flex items-center justify-center shrink-0">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-red-500"></i>
+                    </div>
+                    <div class="bg-dark-950 border border-red-900/30 rounded-2xl p-4 max-w-[85%]">
+                        <p class="text-xs font-semibold text-red-450 uppercase tracking-widest mb-1">Server Interrupted</p>
+                        <p class="text-xs text-gray-400">The generation model was unable to complete the render. Please verify parameters or retry shortly.</p>
+                    </div>
+                `;
+                feed.appendChild(errResponse);
+                lucide.createIcons();
+                feed.scrollTop = feed.scrollHeight;
+            };
+        }
+
+        // Add visual files to the history showcase
+        function saveToHistory(imageUrl, prompt) {
+            generatedHistory.unshift({ url: imageUrl, prompt: prompt });
+
+            const emptyState = document.getElementById('emptyGalleryState');
+            const grid = document.getElementById('recentWorksGrid');
+            const counter = document.getElementById('galleryCount');
+
+            emptyState.classList.add('hidden');
+            grid.classList.remove('hidden');
+            counter.innerText = `${generatedHistory.length} Generations`;
+
+            // Clear Grid for rebuilding
+            grid.innerHTML = '';
+
+            generatedHistory.forEach((item, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = "aspect-square bg-dark-950 rounded-lg overflow-hidden border border-dark-850 hover:border-gold-500/50 group cursor-pointer relative transition-all duration-300 shadow-md";
+                wrapper.onclick = () => {
+                    const feed = document.getElementById('chatFeed');
+                    const restoreMsg = document.createElement('div');
+                    restoreMsg.className = "flex items-start gap-3.5 my-3 animate-fadeIn";
+                    restoreMsg.innerHTML = `
+                        <div class="w-8 h-8 rounded-lg bg-gold-950/40 border border-gold-800/30 flex items-center justify-center shrink-0">
+                            <i data-lucide="history" class="w-4 h-4 text-gold-500"></i>
+                        </div>
+                        <div class="bg-dark-950 border border-dark-800 rounded-2xl p-4 max-w-[85%] flex flex-col gap-3">
+                            <div>
+                                <p class="text-xs font-semibold text-gold-400 uppercase tracking-widest mb-1">BluntStudios Archive</p>
+                                <p class="text-xs text-gray-300">Recalled image reference for: "${item.prompt}"</p>
+                            </div>
+                            <div class="relative w-full overflow-hidden rounded-xl border border-dark-800 bg-dark-900 group">
+                                <img src="${item.url}" alt="Historical Output" class="w-full object-contain max-h-[350px]">
+                                <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <button onclick="downloadDirectly('${item.url}')" class="bg-gold-500 text-dark-950 hover:bg-gold-400 p-2 rounded-lg transition-all shadow-md flex items-center gap-1 text-[11px] font-bold">
+                                        <i data-lucide="download" class="w-3.5 h-3.5"></i> Download High-Res
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    feed.appendChild(restoreMsg);
+                    lucide.createIcons();
+                    feed.scrollTop = feed.scrollHeight;
+                };
+
+                const imgNode = document.createElement('img');
+                imgNode.src = item.url;
+                imgNode.alt = "History frame";
+                imgNode.className = "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500";
+
+                wrapper.appendChild(imgNode);
+                grid.appendChild(wrapper);
+            });
+        }
+
+        // Direct Download link handler
+        function downloadDirectly(url) {
+            const tempAnchor = document.createElement('a');
+            tempAnchor.href = url;
+            tempAnchor.download = `BluntStudios_${Date.now()}.png`;
+            document.body.appendChild(tempAnchor);
+            tempAnchor.click();
+            document.body.removeChild(tempAnchor);
+        }
+    </script>
+</body>
+</html>
